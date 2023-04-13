@@ -3,8 +3,9 @@ import java.time.Year;
 public class Suusad extends Info {
 
     private int pikkus;//kui pikk on inimene
-    public Suusad(String tüüp, String laenutaja, double jalanumber, int pikkus, double aeg) {
-        super(tüüp, laenutaja, jalanumber, aeg);
+
+    public Suusad(String tüüp, String laenutaja, int pikkus, double aeg) {
+        super(tüüp, laenutaja, aeg);
         this.pikkus = pikkus;
     }
 
@@ -18,12 +19,17 @@ public class Suusad extends Info {
     boolean kasTerved() {
         int vanad = 2010; //vanimad suusad
         int uued = Year.now().getValue();//uusimad suusad, mis on ostetud käesoleval aastal
-        int suvalineAasta = (int)Math.floor(Math.random() * (uued - vanad + 1) + vanad);
+        int suvalineAasta = (int) Math.floor(Math.random() * (uued - vanad + 1) + vanad);
         return suvalineAasta >= 2020; //kui suusad on aastast 2020 või uuemad, siis on need terved
     }
 
     @Override
     public String toString() {
-        return super.toString() + " Võtke palun kepid pikkusega " + suusakepiPikkus() + " cm.";
+        if (isInfo()) {
+            if (kasTerved())
+                return super.toString() + "Võtke palun kepid pikkusega " + suusakepiPikkus() + " cm. \n" + "Teil läks hästi - saite uued suusad.";
+            else
+                return super.toString() + "Võtke palun kepid pikkusega " + suusakepiPikkus() + " cm. \n" + "Kahjuks peate leppima vanemate suuskadega.";
+        } else return super.toString() + ", te peate ootama kuni järgmised suusatamise tarvikud vabanevad.";
     }
 }

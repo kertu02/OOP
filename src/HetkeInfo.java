@@ -1,6 +1,6 @@
 //see kõik väga halb ja mõtetu
 //mõtle mingi parem asi välja lol
-
+/*
 public class HetkeInfo implements paljuAega {
     private double lubatudAeg; //kui kaua võib uiske/suuski kasutada
 
@@ -15,3 +15,4 @@ public class HetkeInfo implements paljuAega {
     }
 
 }
+*/

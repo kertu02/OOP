@@ -3,22 +3,23 @@ import java.util.Arrays;
 public abstract class Info {
 
     //isendiväljad
-    private String laenutaja;//laenutaja nimi
-    private String tüüp;//kas uisud või suusad
-    private double jalanumber;//laenutaja jalanumber
+    private static String nimi;//laenutaja nimi
+    private static String tüüp;//kas uisud või suusad
     private double aeg;//kui kaua saab laenutada
-    private int[] kogusedHetkel;//kui palju suuski/uiske/suusakeppe on hetkel laos
-    private boolean info = true;//kas piisavalt vahendeid on laos
+    private static boolean info = true;//kas piisavalt vahendeid on laos
 
     //konstruktor isendiväljadele
-    public Info(String tüüp, String laenutaja, double jalanumber, double aeg) {
+    public Info(String tüüp, String laenutaja, double aeg) {
         this.tüüp = tüüp;
-        this.laenutaja = laenutaja;
-        this.jalanumber = jalanumber;
+        this.nimi = laenutaja;
         this.aeg = aeg;
     }
 
-    //meetod, mis näitab, kas uisud/suusad on terved või katki
+    public static boolean isInfo() {
+        return info;
+    }
+
+    //meetod, mis näitab, kas uisud/suusad on uued või vanad
     abstract boolean kasTerved();
 
     //meetod, mis arvutab kui palju tuleb laenutajal maksta
@@ -36,16 +37,28 @@ public abstract class Info {
 
     @Override
     public String toString() {
+        System.out.println("-".repeat(90));
+        vahendidLaenutamiseks();
         if (info) {
-            return "Teil kuulub maksmisele " + hind() + " eurot.";
+            System.out.println("-".repeat(90));
+            return getNimi() + ", maksmisele kuulub " + hind() + " eurot. ";
         }
         else {
-            return "Vabandame väga!";
+            return getNimi();
         }
     }
 
+    public static String getNimi() {
+        return nimi;
+    }
+
+    //saaks kasutada kui tuleks nime muuta
+    public static void setNimi(String nimi) {
+        Info.nimi = nimi;
+    }
+
     //meetod, mis ütleb kui palju uiske/suuski/suusakeppe on hetkel laos
-    private int[] kogusedHetkel() {
+    private static int[] kogusedHetkel() {
         int[] kogusedHetkel = new int[3];
         int min = 0;
         int max = 50;//maksimaalselt 50 uisu-/suusa-/suusakepi paari on olemas
@@ -60,23 +73,23 @@ public abstract class Info {
     }
 
     //getter asjade koguse saamiseks
-    public int[] getKogusedHetkel() {
+    public static int[] getKogusedHetkel() {
         return kogusedHetkel();
     }
 
     //avalik meetod, mis ütleb kas on olemas laenutamiseks kõiki vahendeid
     //ja kui on siis väljastab kui palju neid on
-    public void vahendidLaenutamiseks() {
+    public static void vahendidLaenutamiseks() {
         //kontrollime kas migeid vahendeid (uiske, suuski või suusakeppe) pole
-        //kogusedHetkel järjendis on 0 kohal uisus, 1 kohal suusad ja 2 kohal kepid
-        if (tüüp.equals("suuskasid") && getKogusedHetkel()[1] == 0 || getKogusedHetkel()[2] == 0) {
-            System.out.println(laenutaja + ", kahjuks pole suusatamiseks piisavalt vahendeid.");
+        //kogusedHetkel järjendis on 0 kohal uisud, 1 kohal suusad ja 2 kohal kepid
+        if (getKogusedHetkel()[1] == 0 || getKogusedHetkel()[2] == 0 && tüüp.equals("suuskasid")) {
+            System.out.println("Kahjuks pole suusatamiseks piisavalt vahendeid.");
             info = false;
-        } else if (tüüp.equals("uiske") && getKogusedHetkel()[0] == 0) {
-            System.out.println(laenutaja + ", kahjuks pole uisutamiseks piisavalt vahendeid.");
+        } else if (getKogusedHetkel()[0] == 0 && tüüp.equals("uiske")) {
+            System.out.println(getNimi() + "Kahjuks pole uisutamiseks piisavalt vahendeid.");
             info = false;
         }
-        if (info) System.out.println(laenutaja + ", vajalikud vahendid on olemas.");
+        if (info) System.out.println("Kõik vajalikud vahendid on olemas.");
         System.out.println("Uiske, suuski, suusakeppe on laos vastavalt (paare): " + Arrays.toString(getKogusedHetkel()) + ".");
     }
 }
