@@ -1,3 +1,4 @@
+import java.io.*;
 import java.util.Arrays;
 
 public abstract class Info {
@@ -38,27 +39,25 @@ public abstract class Info {
     @Override
     public String toString() {
         System.out.println("-".repeat(90));
-        vahendidLaenutamiseks();
+        try {
+            vahendidLaenutamiseks();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         if (info) {
             System.out.println("-".repeat(90));
             return getNimi() + ", maksmisele kuulub " + hind() + " eurot. ";
-        }
-        else {
+        } else {
             return getNimi();
         }
     }
 
-    public static String getNimi() {
+    public String getNimi() {
         return nimi;
     }
 
-    //saaks kasutada kui tuleks nime muuta
-    public static void setNimi(String nimi) {
-        Info.nimi = nimi;
-    }
-
     //meetod, mis ütleb kui palju uiske/suuski/suusakeppe on hetkel laos
-    private static int[] kogusedHetkel() {
+    private static void kogusedHetkel() throws Exception {
         int[] kogusedHetkel = new int[3];
         int min = 0;
         int max = 50;//maksimaalselt 50 uisu-/suusa-/suusakepi paari on olemas
@@ -68,18 +67,34 @@ public abstract class Info {
             int suvaline = (int) Math.floor(Math.random() * (max - min + 1) + min);
             kogusedHetkel[i] = suvaline;
         }
-
-        return kogusedHetkel;
+        //loome faili, kuhu on lao andmed kirjutatud
+        try (BufferedWriter bufferedWriter = new BufferedWriter(
+                new OutputStreamWriter(
+                        new FileOutputStream("lao_andmed.txt"), "UTF-8"))) {
+            bufferedWriter.write(Arrays.toString(kogusedHetkel));
+        }
     }
 
     //getter asjade koguse saamiseks
-    public static int[] getKogusedHetkel() {
-        return kogusedHetkel();
+    public static int[] getKogusedHetkel() throws Exception {
+        kogusedHetkel();
+        //loeme failist andmed
+        int[] kogused = new int[3];
+        try (InputStreamReader inputStreamReader = new InputStreamReader
+                (new FileInputStream("lao_andmed.txt"), "UTF-8");
+             BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+            String rida = bufferedReader.readLine();
+            String[] osad = rida.substring(1, rida.length() - 1).split(", ");
+            kogused[0] = Integer.parseInt(osad[0]);//uisud
+            kogused[1] = Integer.parseInt(osad[1]);//suusad
+            kogused[2] = Integer.parseInt(osad[2]);//kepid
+        }
+        return kogused;
     }
 
     //avalik meetod, mis ütleb kas on olemas laenutamiseks kõiki vahendeid
     //ja kui on siis väljastab kui palju neid on
-    public static void vahendidLaenutamiseks() {
+    public void vahendidLaenutamiseks() throws Exception {
         //kontrollime kas migeid vahendeid (uiske, suuski või suusakeppe) pole
         //kogusedHetkel järjendis on 0 kohal uisud, 1 kohal suusad ja 2 kohal kepid
         if (getKogusedHetkel()[1] == 0 || getKogusedHetkel()[2] == 0 && tüüp.equals("suuskasid")) {
